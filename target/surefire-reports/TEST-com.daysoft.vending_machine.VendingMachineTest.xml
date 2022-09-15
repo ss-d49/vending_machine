@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<testsuite tests="3" failures="0" name="com.daysoft.vending_machine.VendingMachineTest" time="0.263" errors="0" skipped="0">
+<testsuite tests="3" failures="0" name="com.daysoft.vending_machine.VendingMachineTest" time="0.261" errors="0" skipped="0">
   <properties>
     <property name="java.runtime.name" value="OpenJDK Runtime Environment"/>
     <property name="java.vm.version" value="17.0.4+8-Debian-1"/>
     <property name="sun.boot.library.path" value="/usr/lib/jvm/java-17-openjdk-amd64/lib"/>
-    <property name="maven.multiModuleProjectDirectory" value="/home/ss-d49/Desktop/vending_machine"/>
+    <property name="maven.multiModuleProjectDirectory" value="/home/ss-d49/Documents/vending_machine"/>
     <property name="java.vm.vendor" value="Debian"/>
     <property name="java.vendor.url" value="https://tracker.debian.org/openjdk-17"/>
     <property name="guice.disable.misplaced.annotation.check" value="true"/>
@@ -13,7 +13,7 @@
     <property name="user.country" value="GB"/>
     <property name="sun.java.launcher" value="SUN_STANDARD"/>
     <property name="java.vm.specification.name" value="Java Virtual Machine Specification"/>
-    <property name="user.dir" value="/home/ss-d49/Desktop/vending_machine"/>
+    <property name="user.dir" value="/home/ss-d49/Documents/vending_machine"/>
     <property name="java.vm.compressedOopsMode" value="Zero based"/>
     <property name="java.runtime.version" value="17.0.4+8-Debian-1"/>
     <property name="os.arch" value="amd64"/>
@@ -57,7 +57,7 @@
     <property name="sun.cpu.endian" value="little"/>
     <property name="sun.stdout.encoding" value="UTF-8"/>
   </properties>
-  <testcase classname="com.daysoft.vending_machine.VendingMachineTest" name="com.daysoft.vending_machine.VendingMachineTest.testChangeFrom1for90is10" time="0.26"/>
+  <testcase classname="com.daysoft.vending_machine.VendingMachineTest" name="com.daysoft.vending_machine.VendingMachineTest.testChangeFrom1for90is10" time="0.259"/>
   <testcase classname="com.daysoft.vending_machine.VendingMachineTest" name="com.daysoft.vending_machine.VendingMachineTest.testChangeFrom2for110is1x502x20" time="0.001"/>
-  <testcase classname="com.daysoft.vending_machine.VendingMachineTest" name="com.daysoft.vending_machine.VendingMachineTest.testChangeFrom1for90is2x5IfDepeleted10" time="0.002"/>
+  <testcase classname="com.daysoft.vending_machine.VendingMachineTest" name="com.daysoft.vending_machine.VendingMachineTest.testChangeFrom1for90is2x5IfDepeleted10" time="0.001"/>
 </testsuite>
