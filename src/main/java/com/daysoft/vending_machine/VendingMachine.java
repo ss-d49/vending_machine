@@ -17,8 +17,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class VendingMachine {
-
-  private MathContext mc = new MathContext(2, RoundingMode.HALF_EVEN);
   private static Logger logger = LoggerFactory.getLogger(
     MethodHandles.lookup().lookupClass().getSimpleName()
   );
@@ -60,27 +58,38 @@ public class VendingMachine {
     this.items.remove(item);
   }
 
-  public Map<String, Integer> convertToCoins(BigDecimal coins) {
+  public Map<String, Integer> convertToCoins(BigDecimal coins) throws insufficientChangeError{
     Map<String, Integer> returnCoins = new HashMap<>();
-
+    int counter = 0;
+    Map<String, Integer> copyOfCoinQuantities = new HashMap<>();
+    copyOfCoinQuantities.putAll(this.coinQuantities);
     while (coins.compareTo(BigDecimal.ZERO) > 0) {
+
       for (Entry<String, BigDecimal> i : Common.coinTypes.entrySet()) {
         BigDecimal value = Common.coinTypes.get(i.getKey());
         if (
           value.compareTo(coins) <= 0 &&
-          this.coinQuantities.get(i.getKey()) != 0
+          copyOfCoinQuantities.get(i.getKey()) > 0
         ) {
-          coins = coins.subtract(value, mc);
-          if (this.coinQuantities.get(i.getKey()) == 1) {
+          coins = coins.subtract(value);
+          if (copyOfCoinQuantities.get(i.getKey()) == 1) {
             logger.info(
               String.format("The stock of %s coins is depleted!", i.getKey())
             );
           }
           returnCoins.merge(i.getKey(), 1, Integer::sum);
+          copyOfCoinQuantities.merge(i.getKey(), -1, Integer::sum);
           break;
+        }
+        counter++;
+        if (counter>100){
+          // logger.info("Insufficient change in machine.");
+          // return Map.of();
+          throw new insufficientChangeError("Insufficient change in machine.");
         }
       }
     }
+    this.coinQuantities = copyOfCoinQuantities;
     //returnCoins.forEach((i, q) -> logString.append(String.format("\t%s, %d\n", i,q)));
     return returnCoins;
   }
@@ -111,14 +120,14 @@ public class VendingMachine {
       .map(i ->
         Common.coinTypes
           .get(i.getKey())
-          .multiply(BigDecimal.valueOf(i.getValue()), mc)
+          .multiply(BigDecimal.valueOf(i.getValue()))
       )
       .reduce(BigDecimal.ZERO, BigDecimal::add);
 
     logger.info(String.format("Customer paid £%.2f.", amount));
 
     Map<String, Integer> returnChange = new HashMap<>();
-
+    Map<String, Integer> changeCoins = Map.of();
     if (amount.compareTo(item.getPrice()) >= 0) {
       if (this.items.get(item) == 0) {
         this.items.remove(item);
@@ -126,22 +135,38 @@ public class VendingMachine {
           String.format("Stock of item: %s depleted.", item.getName())
         );
       }
-      BigDecimal change = amount.subtract(item.getPrice(), mc);
-      this.balance = this.balance.subtract(amount, mc);
+      BigDecimal change = amount.subtract(item.getPrice());
+
       logger.info(String.format("Returning £%.2f change.", change));
-      Map<String, Integer> changeCoins = this.convertToCoins(change);
-      logger.info(
-        changeCoins
-          .entrySet()
-          .stream()
-          .map(i -> String.format("\t%s\t%d\n", i.getKey(), i.getValue()))
-          .reduce("\nCHANGE in coins: \n\tCoin\tQuantity\n", String::concat)
-      );
-      logger.info(String.format("Balance: £%.2f\n", this.balance));
-      return changeCoins;
+
+      try{
+        changeCoins = this.convertToCoins(change);
+        this.balance = this.balance.subtract(change);
+      }
+      catch(insufficientChangeError e){
+        logger.info(e.getMessage());
+        logger.info("Returning money");
+        changeCoins = coins;
+      }
     } else {
-      logger.info("Insufficient money to purchase item.");
+      logger.info("Insufficient money to purchase item. Returning money.");
+      changeCoins = coins;
     }
-    return null;
+    logger.info(
+      changeCoins
+        .entrySet()
+        .stream()
+        .map(i -> String.format("\t%s\t%d\n", i.getKey(), i.getValue()))
+        .reduce("\nCHANGE in coins: \n\tCoin\tQuantity\n", String::concat)
+    );
+    logger.info(
+      this.coinQuantities
+        .entrySet()
+        .stream()
+        .map(i -> String.format("\t%s\t%d\n", i.getKey(), i.getValue()))
+        .reduce("\nCoins in Machine: \n\tCoin\tQuantity\n", String::concat)
+    );
+    logger.info(String.format("Balance: £%.2f\n", this.balance));
+    return changeCoins;
   }
 }

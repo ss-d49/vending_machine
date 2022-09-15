@@ -1,5 +1,6 @@
 com/daysoft/vending_machine/Common$1.class
 com/daysoft/vending_machine/Demo.class
+com/daysoft/vending_machine/insufficientChangeError.class
 com/daysoft/vending_machine/Demo$1.class
 com/daysoft/vending_machine/VendingMachine.class
 com/daysoft/vending_machine/Common.class
