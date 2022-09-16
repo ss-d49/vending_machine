@@ -24,28 +24,39 @@ public class Demo {
   private static VendingMachine hotDrinksMachine = null;
 
   public static void handleAddItems() {
-    System.out.println("Select purchasable items to add to machine:");
-
     while (true) {
+      System.out.println("Select purchasable items to add to machine:");
+
       System.out.println("ID\tName:\tPrice:");
       purchasableItems.forEach((num, itm) ->
         System.out.println(
           String.format("%d\t%s\t£%.02f", num, itm.getName(), itm.getPrice())
         )
       );
-      System.out.print("\nEnter item number: ");
-      int itemChoice = Integer.parseInt(scn.nextLine());
-      System.out.print("Enter item quantity: ");
-      int itemQuantity = Integer.parseInt(scn.nextLine());
-      hotDrinksMachine.addItem(purchasableItems.get(itemChoice), itemQuantity);
-      System.out.print("\nAdd another item? (y/n): ");
-      response = scn.nextLine();
-      if (response.equalsIgnoreCase("n")) {
-        break;
-      } else if (!response.equalsIgnoreCase("y")) {
-        System.out.println(
-          String.format("%s is not a valid option.", response)
+      try {
+        System.out.print("\nEnter item number: ");
+        int itemChoice = Integer.parseInt(scn.nextLine());
+        System.out.print("Enter item quantity: ");
+        int itemQuantity = Integer.parseInt(scn.nextLine());
+        hotDrinksMachine.addItem(
+          purchasableItems.get(itemChoice),
+          itemQuantity
         );
+
+        while (true) {
+          System.out.print("\nAdd another item? (y/n): ");
+          response = scn.nextLine();
+          if (response.equalsIgnoreCase("n")) {
+            break;
+          } else if (!response.equalsIgnoreCase("y")) {
+            System.out.println(
+              String.format("%s is not a valid option.", response)
+            );
+          }
+        }
+        break;
+      } catch (NumberFormatException nfe) {
+        System.out.println("Please enter valid numeric input.");
       }
     }
   }
@@ -131,31 +142,37 @@ public class Demo {
             )
           );
         System.out.print("\nEnter item number: ");
-        int itemChoice = Integer.parseInt(scn.nextLine());
+        try {
+          int itemChoice = Integer.parseInt(scn.nextLine());
 
-        if (purchasableItems.containsKey(itemChoice)) {
-          Map<String, Integer> payment = new HashMap<>();
-          System.out.println("Specify quantity of each coin to pay for item:");
+          if (purchasableItems.containsKey(itemChoice)) {
+            Map<String, Integer> payment = new HashMap<>();
+            System.out.println(
+              "Specify quantity of each coin to pay for item:"
+            );
 
-          for (String coinType : Common.coinTypes.keySet()) {
-            while (true) {
-              System.out.print(String.format("  %s: ", coinType));
-              try {
-                payment.put(coinType, Integer.parseInt(scn.nextLine()));
-                break;
-              } catch (NumberFormatException nfe) {
-                System.out.println("Please enter valid numeric input");
+            for (String coinType : Common.coinTypes.keySet()) {
+              while (true) {
+                System.out.print(String.format("  %s: ", coinType));
+                try {
+                  payment.put(coinType, Integer.parseInt(scn.nextLine()));
+                  break;
+                } catch (NumberFormatException nfe) {
+                  System.out.println("Please enter valid numeric input");
+                }
               }
             }
+            Map<String, Integer> change = hotDrinksMachine.purchaseItem(
+              purchasableItems.get(itemChoice).getName(),
+              payment
+            );
+          } else {
+            System.out.print(
+              String.format("%d is not a valid option.", itemChoice)
+            );
           }
-          Map<String, Integer> change = hotDrinksMachine.purchaseItem(
-            purchasableItems.get(itemChoice).getName(),
-            payment
-          );
-        } else {
-          System.out.print(
-            String.format("%d is not a valid option.", itemChoice)
-          );
+        } catch (NumberFormatException nfe) {
+          System.out.println("Please enter valid numeric input");
         }
       } else if (response.equalsIgnoreCase("n")) {
         break;

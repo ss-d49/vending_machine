@@ -48,14 +48,33 @@ public class VendingMachine {
   }
 
   public void addItem(Item item, int quantity) {
-    this.items.put(item, quantity);
+    this.items.merge(item, quantity, Integer::sum);
     logger.info(
       String.format("Added %d units of item %s.", quantity, item.getName())
+    );
+
+    logger.info(
+      this.items.entrySet()
+        .stream()
+        .map(i -> String.format("\t%s\t%d\n", i.getKey().getName(), i.getValue()))
+        .reduce(
+          "\nCurrent Item stock in machine: \n\tItem, Quantity\n",
+          String::concat
+        )
     );
   }
 
   public void removeItem(Item item) {
     this.items.remove(item);
+    logger.info(
+      this.items.entrySet()
+        .stream()
+        .map(i -> String.format("\t%s\t%d\n", i.getKey().getName(), i.getValue()))
+        .reduce(
+          "\nCurrent Item stock in machine: \n\tItem, Quantity\n",
+          String::concat
+        )
+    );
   }
 
   public Map<String, Integer> convertToCoins(BigDecimal coins) throws insufficientChangeError{
@@ -167,6 +186,16 @@ public class VendingMachine {
         .reduce("\nCoins in Machine: \n\tCoin\tQuantity\n", String::concat)
     );
     logger.info(String.format("Balance: £%.2f\n", this.balance));
+
+    logger.info(
+      this.items.entrySet()
+        .stream()
+        .map(i -> String.format("\t%s\t%d\n", i.getKey().getName(), i.getValue()))
+        .reduce(
+          "\nCurrent Item stock in machine: \n\tItem, Quantity\n",
+          String::concat
+        )
+    );
     return changeCoins;
   }
 }
